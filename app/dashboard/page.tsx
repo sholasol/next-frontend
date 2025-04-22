@@ -118,7 +118,12 @@ const Dashboard: React.FC = () => {
             })
             
             if(response.data.status) {
-                toast.success(response.data.message)
+                // toast.success(response.data.message)
+                Swal.fire(
+                    'Success!',
+                    response.data.message,
+                    'success'
+                )
                 setFormData({
                     name: "",
                     description: "",
@@ -155,6 +160,43 @@ const Dashboard: React.FC = () => {
             console.log(error)
             toast.error("Failed to fetch products")
         }
+    }
+
+    //delete product
+    const handleDelete = (id: number) => async () => {
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/products/${id}`, {
+                        headers: {
+                            Authorization: `Bearer ${authToken}`    
+                        }
+                    })
+                    if(response.data.status) {
+                        // toast.success(response.data.message)
+                        Swal.fire(
+                            'Deleted!',
+                            response.data.message,
+                            'success'
+                        )
+                        fetchProducts() //refresh the product list
+                    }
+                } catch (error) {
+                    console.log(error)
+                    toast.error("Failed to delete product") 
+                    
+                }
+            }
+            return false;
+        });
     }
 
   return (
@@ -262,7 +304,12 @@ const Dashboard: React.FC = () => {
                                         >
                                             Edit
                                         </button>
-                                        <button className="btn btn-danger btn-sm">Delete</button>
+                                        <button 
+                                            className="btn btn-danger btn-sm"
+                                            onClick={handleDelete(product.id)}
+                                        >
+                                                Delete
+                                        </button>
                                     </td>
                                 </tr>
                             ))

@@ -5,6 +5,7 @@ import { createContext, useContext, useEffect, useState } from "react"
 import axios from "axios"
 import toast from "react-hot-toast"
 import Cookies from "js-cookie"
+import Swal from "sweetalert2"
 import { useRouter } from "next/navigation"
 
 interface AppProviderType{
@@ -101,7 +102,16 @@ export const AppProvider = ({
                 password_confirmation
             });
 
-            console.log(response)
+            // console.log(response)
+            if(response.data.status){
+                Swal.fire({
+                    title: 'Registration Successful',
+                    text: 'Please check your email for verification.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                })
+                router.push("/auth")    
+            }
         } catch (error) {
             console.log(error)
         }finally{
