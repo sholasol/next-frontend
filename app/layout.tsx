@@ -22,7 +22,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
        <AppProvider>
-        <Toaster />
+        <Toaster position="top-right"/>
           <Navbar />
           {children}
        </AppProvider>

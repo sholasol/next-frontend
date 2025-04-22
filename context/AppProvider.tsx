@@ -9,11 +9,12 @@ import { useRouter } from "next/navigation"
 
 interface AppProviderType{
     isLoading: boolean, 
+    authToken: string|null,
 
     login: (
         email: string, 
         password: string
-    ) => Promise<void>
+    ) => Promise<void>,
 
     register: (
         name: string, 
@@ -25,7 +26,9 @@ interface AppProviderType{
         email: string, 
         password: string, 
         password_confirmation: string,
-    ) => Promise<void>
+    ) => Promise<void>,
+
+    logout: () => void
 }
 
 const AppContext = createContext<AppProviderType|undefined>(undefined)
@@ -50,7 +53,8 @@ export const AppProvider = ({
         }else{
             router.push("/auth")
         }
-    })
+        setIsLoading
+    }, [router])
 
     const login = async (email:string, password: string) => {
         setIsLoading(true)
@@ -73,7 +77,16 @@ export const AppProvider = ({
         }
     }
 
-    const register = async (name: string, phone: string, street: string, zip: string, city: string, country:string, email:string, password: string, password_confirmation: string) => {
+    const register = async (
+        name: string, 
+        phone: string, 
+        street: string, 
+        zip: string, 
+        city: string, 
+        country:string, 
+        email:string, 
+        password: string, 
+        password_confirmation: string) => {
         setIsLoading(true)
         try {
             const response = await axios.post(`${API_URL}/register`, {
@@ -96,8 +109,17 @@ export const AppProvider = ({
         }
     }
 
+    const logout = () => {
+        setIsLoading(true)
+        Cookies.remove("authToken")
+        setAuthToken(null)
+        router.push("/auth")
+        toast.success("Logout Successful")
+        setIsLoading(false)
+    }
+
     return (
-        <AppContext.Provider value={ {login, register, isLoading} }>
+        <AppContext.Provider value={ {login, register, isLoading, authToken, logout} }>
             {isLoading ? <Loader /> : children}
         </AppContext.Provider>
     )

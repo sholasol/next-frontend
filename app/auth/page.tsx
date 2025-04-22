@@ -1,7 +1,8 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { myAppHook } from '@/context/AppProvider';
+import { useRouter } from 'next/navigation';
 
 interface formData {
   name?: string;
@@ -29,7 +30,16 @@ const Auth: React.FC = () => {
     password_confirmation: "",
   });
 
-  const { login, register } = myAppHook();
+  const router = useRouter()
+
+  const { login, register, authToken, isLoading } = myAppHook();
+
+  useEffect(() => {
+    if (authToken) {
+      router.push('/dashboard');
+      return;
+    }
+  }, [authToken, router]);
 
   const handleOnChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
